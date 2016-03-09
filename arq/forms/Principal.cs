@@ -51,8 +51,7 @@ namespace arq
             currentArq = 1;
             string[] report = new string[] { "tipo", "mensagem" };
             string modoEnvio = setModoEnvio(destino.Text);
-
-
+            string novoDestino = VerificaDestino(destino.Text, Path.GetFileName(selecionarPasta.SelectedPath));
             switch (modoEnvio)
             {
                 case "one":
@@ -73,24 +72,64 @@ namespace arq
                     }
                     break;
                 case "FF":
+                    Console.WriteLine("Copiando PARA FF's");
                     if (radioArqs.Checked) // Se são arquvos
                     {
-                    }
+                        for(decimal x=filMin.Value;x <= filMax.Value; x++)
+                        {
+                            novoDestino = f.subsituidor("FF", novoDestino, x.ToString());
+                            novoDestino = VerificaDestino(destino.Text, Path.GetFileName(selecionarPasta.SelectedPath));
+                        }
 
+                    }
+                    else
+                    {
+
+                    }
 
                         break;
                 case "PP":
+                    Console.WriteLine("Copiando PARA PP's");
+                    if (radioArqs.Checked) // Se são arquvos
+                    {
+                        for (decimal x = 2; x <=5; x++)
+                        {
+                            novoDestino = f.subsituidor("PP", novoDestino, x.ToString());
+                            novoDestino = VerificaDestino(destino.Text, Path.GetFileName(selecionarPasta.SelectedPath));
+                        }
 
+                    }
+                    else
+                    {
+
+                    }
                     break;
                 case "FFPP":
+                    Console.WriteLine("Copiando PARA FFPP's");
+                    if (radioArqs.Checked) // Se são arquvos
+                    {
+                        for (decimal x = filMin.Value; x <= filMax.Value; x++)
+                        {
+                            
+                            for (decimal y = 2; y <= 5; y++)
+                            {
+                                novoDestino = f.subsituidor("FF", novoDestino, x.ToString());
+                                novoDestino = f.subsituidor("PP", novoDestino, y.ToString());
+                                // Copia aqui
+                            }
+                            novoDestino = VerificaDestino(destino.Text, Path.GetFileName(selecionarPasta.SelectedPath));
+                        }
 
+                    }
+                    else
+                    {
+
+                    }
                     break;
                 default:
                     break;
             }
-
-
-           
+      
            
         }
 
