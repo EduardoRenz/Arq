@@ -54,7 +54,12 @@ namespace arq
             this.bgw = new System.ComponentModel.BackgroundWorker();
             this.Abas = new System.Windows.Forms.TabControl();
             this.TabCopia = new System.Windows.Forms.TabPage();
+            this.radioPasta = new System.Windows.Forms.RadioButton();
+            this.radioArqs = new System.Windows.Forms.RadioButton();
+            this.btSeleciona = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.selecionarArquivo = new System.Windows.Forms.OpenFileDialog();
+            this.selecionarPasta = new System.Windows.Forms.FolderBrowserDialog();
             opCredenciais = new System.Windows.Forms.GroupBox();
             Galcance = new System.Windows.Forms.GroupBox();
             opCredenciais.SuspendLayout();
@@ -189,46 +194,47 @@ namespace arq
             // 
             // origem
             // 
-            this.origem.Location = new System.Drawing.Point(120, 12);
+            this.origem.Location = new System.Drawing.Point(120, 36);
             this.origem.Name = "origem";
+            this.origem.ReadOnly = true;
             this.origem.Size = new System.Drawing.Size(292, 20);
             this.origem.TabIndex = 1;
             // 
             // origemlabel
             // 
             this.origemlabel.AutoSize = true;
-            this.origemlabel.Location = new System.Drawing.Point(6, 15);
+            this.origemlabel.Location = new System.Drawing.Point(3, 39);
             this.origemlabel.Name = "origemlabel";
-            this.origemlabel.Size = new System.Drawing.Size(94, 13);
+            this.origemlabel.Size = new System.Drawing.Size(114, 13);
             this.origemlabel.TabIndex = 2;
-            this.origemlabel.Text = "Arquivo de Origem";
+            this.origemlabel.Text = " Arquivo/Pasta Origem";
             // 
             // destino
             // 
-            this.destino.Location = new System.Drawing.Point(120, 50);
+            this.destino.Location = new System.Drawing.Point(120, 68);
             this.destino.Name = "destino";
             this.destino.Size = new System.Drawing.Size(292, 20);
             this.destino.TabIndex = 1;
-            this.destino.Text = "//192.168.FF.PP/sac/prg/";
+            this.destino.Text = "\\\\192.168.FF.PP\\sac\\prg\\";
             // 
             // destinolabel
             // 
             this.destinolabel.AutoSize = true;
-            this.destinolabel.Location = new System.Drawing.Point(6, 53);
+            this.destinolabel.Location = new System.Drawing.Point(6, 71);
             this.destinolabel.Name = "destinolabel";
-            this.destinolabel.Size = new System.Drawing.Size(82, 13);
+            this.destinolabel.Size = new System.Drawing.Size(114, 13);
             this.destinolabel.TabIndex = 2;
-            this.destinolabel.Text = "Arquivo Destino";
+            this.destinolabel.Text = "Arquivo/Pasta Destino";
             // 
             // info
             // 
             this.info.AutoSize = true;
             this.info.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.25F);
-            this.info.Location = new System.Drawing.Point(117, 73);
+            this.info.Location = new System.Drawing.Point(117, 91);
             this.info.Name = "info";
             this.info.Size = new System.Drawing.Size(183, 13);
             this.info.TabIndex = 3;
-            this.info.Text = "//192.168.FF.PP/pasta/novonome.ext";
+            this.info.Text = "\\\\192.168.FF.PP\\pasta\\novonome.ext";
             this.dica.SetToolTip(this.info, "Manter FF = todas as filiais; Manter PP = todos os PDV\'s");
             // 
             // ok
@@ -241,7 +247,7 @@ namespace arq
             this.ok.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.ok.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.ok.ForeColor = System.Drawing.Color.DarkOrange;
-            this.ok.Location = new System.Drawing.Point(9, 92);
+            this.ok.Location = new System.Drawing.Point(9, 107);
             this.ok.Name = "ok";
             this.ok.Size = new System.Drawing.Size(75, 23);
             this.ok.TabIndex = 4;
@@ -253,7 +259,7 @@ namespace arq
             // 
             this.log.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(205)))), ((int)(((byte)(205)))), ((int)(((byte)(205)))));
             this.log.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.log.Location = new System.Drawing.Point(9, 121);
+            this.log.Location = new System.Drawing.Point(9, 146);
             this.log.Name = "log";
             this.log.ReadOnly = true;
             this.log.Size = new System.Drawing.Size(403, 149);
@@ -262,7 +268,7 @@ namespace arq
             // 
             // barraProgresso
             // 
-            this.barraProgresso.Location = new System.Drawing.Point(120, 92);
+            this.barraProgresso.Location = new System.Drawing.Point(120, 107);
             this.barraProgresso.Name = "barraProgresso";
             this.barraProgresso.Size = new System.Drawing.Size(292, 23);
             this.barraProgresso.TabIndex = 6;
@@ -271,7 +277,7 @@ namespace arq
             // 
             this.bgw.WorkerReportsProgress = true;
             this.bgw.WorkerSupportsCancellation = true;
-            this.bgw.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bgw_DoWork);
+            this.bgw.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BgWork_copiar);
             this.bgw.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.bgw_ProgressChanged);
             this.bgw.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.bgw_RunWorkerCompleted);
             // 
@@ -279,16 +285,21 @@ namespace arq
             // 
             this.Abas.Controls.Add(this.TabCopia);
             this.Abas.Controls.Add(this.tabPage2);
-            this.Abas.Location = new System.Drawing.Point(-6, 0);
+            this.Abas.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Abas.Location = new System.Drawing.Point(0, 0);
+            this.Abas.Margin = new System.Windows.Forms.Padding(0);
             this.Abas.Name = "Abas";
             this.Abas.SelectedIndex = 0;
-            this.Abas.Size = new System.Drawing.Size(432, 334);
+            this.Abas.Size = new System.Drawing.Size(428, 330);
             this.Abas.TabIndex = 7;
             // 
             // TabCopia
             // 
             this.TabCopia.BackColor = System.Drawing.SystemColors.HotTrack;
             this.TabCopia.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.TabCopia.Controls.Add(this.radioPasta);
+            this.TabCopia.Controls.Add(this.radioArqs);
+            this.TabCopia.Controls.Add(this.btSeleciona);
             this.TabCopia.Controls.Add(this.origemlabel);
             this.TabCopia.Controls.Add(this.barraProgresso);
             this.TabCopia.Controls.Add(this.origem);
@@ -303,10 +314,42 @@ namespace arq
             this.TabCopia.Margin = new System.Windows.Forms.Padding(1);
             this.TabCopia.Name = "TabCopia";
             this.TabCopia.Padding = new System.Windows.Forms.Padding(3);
-            this.TabCopia.Size = new System.Drawing.Size(424, 308);
+            this.TabCopia.Size = new System.Drawing.Size(420, 304);
             this.TabCopia.TabIndex = 0;
             this.TabCopia.Text = "Copia";
             this.TabCopia.ToolTipText = "Define Origem e Destino da copia e a executa";
+            // 
+            // radioPasta
+            // 
+            this.radioPasta.AutoSize = true;
+            this.radioPasta.Location = new System.Drawing.Point(192, 12);
+            this.radioPasta.Name = "radioPasta";
+            this.radioPasta.Size = new System.Drawing.Size(52, 17);
+            this.radioPasta.TabIndex = 10;
+            this.radioPasta.Text = "Pasta";
+            this.radioPasta.UseVisualStyleBackColor = true;
+            // 
+            // radioArqs
+            // 
+            this.radioArqs.AutoSize = true;
+            this.radioArqs.Checked = true;
+            this.radioArqs.Location = new System.Drawing.Point(120, 13);
+            this.radioArqs.Name = "radioArqs";
+            this.radioArqs.Size = new System.Drawing.Size(66, 17);
+            this.radioArqs.TabIndex = 9;
+            this.radioArqs.TabStop = true;
+            this.radioArqs.Text = "Arquivos";
+            this.radioArqs.UseVisualStyleBackColor = true;
+            // 
+            // btSeleciona
+            // 
+            this.btSeleciona.Location = new System.Drawing.Point(336, 9);
+            this.btSeleciona.Name = "btSeleciona";
+            this.btSeleciona.Size = new System.Drawing.Size(76, 23);
+            this.btSeleciona.TabIndex = 7;
+            this.btSeleciona.Text = "Selecionar";
+            this.btSeleciona.UseVisualStyleBackColor = true;
+            this.btSeleciona.Click += new System.EventHandler(this.btSeleciona_Click);
             // 
             // tabPage2
             // 
@@ -320,12 +363,19 @@ namespace arq
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Configurações";
             // 
+            // selecionarArquivo
+            // 
+            this.selecionarArquivo.CheckFileExists = false;
+            this.selecionarArquivo.FileName = "Folder Selection.";
+            this.selecionarArquivo.Multiselect = true;
+            this.selecionarArquivo.ValidateNames = false;
+            // 
             // Principal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.HotTrack;
-            this.ClientSize = new System.Drawing.Size(418, 328);
+            this.ClientSize = new System.Drawing.Size(428, 330);
             this.Controls.Add(this.Abas);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -369,8 +419,11 @@ namespace arq
         private NumericUpDown filMin;
         private Label LInicio;
         private Label Lfim;
-
-      
+        private OpenFileDialog selecionarArquivo;
+        private Button btSeleciona;
+        private RadioButton radioPasta;
+        private RadioButton radioArqs;
+        private FolderBrowserDialog selecionarPasta;
     }
 }
 
