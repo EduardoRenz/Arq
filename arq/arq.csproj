@@ -59,7 +59,7 @@
     <GenerateManifests>false</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>imagens\icones\icon.ico</ApplicationIcon>
@@ -115,7 +115,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="arq_TemporaryKey.pfx" />
     <None Include="bancoDataSet.xsc">
       <DependentUpon>bancoDataSet.xsd</DependentUpon>
     </None>
@@ -154,13 +153,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="banco.mdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="banco_log.ldf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <DependentUpon>banco.mdf</DependentUpon>
-    </Content>
     <Content Include="imagens\icones\icon.ico" />
   </ItemGroup>
   <ItemGroup>

@@ -22,7 +22,7 @@ namespace arq
         {
             InitializeComponent();
         }
-//======================================================== RODA AO CLICAR NO BOTÂO ================================================
+
         private void button1_Click(object sender, EventArgs e)
         {
             if (!bgw.IsBusy)
@@ -45,8 +45,54 @@ namespace arq
                 MessageBox.Show("Não é possivel copiar agora, programa está ocupado.");
             }
 
+        } // Ao clickar no botão   
+        private void BgWork_copiar(object sender, DoWorkEventArgs e) // Inicia a Thread da copia
+        {
+            currentArq = 1;
+            string[] report = new string[] { "tipo", "mensagem" };
+            string modoEnvio = setModoEnvio(destino.Text);
+
+
+            switch (modoEnvio)
+            {
+                case "one":
+                    Console.WriteLine("Copiando uma vez sem variavel");
+                    if (radioArqs.Checked) // Se são arquvos
+                    {
+                        for (int x = 0; x < selecionarArquivo.FileNames.Length; x++)
+                        {
+                            report = new string[] { "", "Copiando: " + selecionarArquivo.SafeFileNames[x] + " para " + VerificaDestino(destino.Text, selecionarArquivo.SafeFileNames[x]) + "\n" };
+                            bgw.ReportProgress(0, report);
+                            CopiaArquivos(selecionarArquivo.FileNames[x], VerificaDestino(destino.Text, selecionarArquivo.SafeFileNames[x]));
+                            currentArq++;
+                        }
+                    }
+                    else // Se são diretórios
+                    {
+                        report = new string[] { "", "Copiando pasta:" + Path.GetFileName(selecionarPasta.SelectedPath) + " para " + VerificaDestino(destino.Text, Path.GetFileName(selecionarPasta.SelectedPath)) + " \n" };
+                    }
+                    break;
+                case "FF":
+                    if (radioArqs.Checked) // Se são arquvos
+                    {
+                    }
+
+
+                        break;
+                case "PP":
+
+                    break;
+                case "FFPP":
+
+                    break;
+                default:
+                    break;
+            }
+
+
+           
+           
         }
-    
 
         private string VerificaDestino(string destino, string nome)
         {
@@ -56,37 +102,38 @@ namespace arq
             }
             return destino;
 
-        }
-
-        //================================================================= THREAD ===============================================================================
-        // Inicia a Thread -----------
-        private void BgWork_copiar(object sender, DoWorkEventArgs e)
+        } // Ajusta arquivo no destino, baseado na variavel de destino      
+        private string setModoEnvio(string destino)
         {
-            currentArq = 1;  
-            string[] report = new string[] { "tipo", "mensagem" };
-            if (radioArqs.Checked) // Se são arquvos
+            if (!f.verificaString("FF", destino) && (!f.verificaString("PP", destino))) // Se não tiver var de Filial
             {
-                for (int x = 0; x < selecionarArquivo.FileNames.Length; x++)
+                return "one";
+            }
+            else if (!f.verificaString("FF", destino) && (f.verificaString("PP", destino))) // SE não tiver FF mas tiver PP
+            {
+                return "PP";
+            }
+            else if (f.verificaString("FF", destino)) {
+
+                if(f.verificaString("PP", destino))
                 {
-                    report =  new string[] { "","Copiando: " + selecionarArquivo.SafeFileNames[x] + " para " + VerificaDestino(destino.Text, selecionarArquivo.SafeFileNames[x]) + "\n"};
-                    bgw.ReportProgress(0,report);
-                    CopiaArquivos(selecionarArquivo.FileNames[x], VerificaDestino(destino.Text, selecionarArquivo.SafeFileNames[x]));
-                    currentArq++;
+                    return "FFPP";
+                }
+                else
+                {
+                    return "FF";
                 }
             }
-            else // Se são diretórios
+            else
             {
-                report = new string[] { "", "Copiando pasta:" + Path.GetFileName(selecionarPasta.SelectedPath) + " para " + VerificaDestino(destino.Text, Path.GetFileName(selecionarPasta.SelectedPath)) + " \n" };
+                return "none";
             }
-        }
-        // Retorna mudanças no processo ------------
+        } 
         private void bgw_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             string[]   reports = e.UserState as string[];
             if(e.UserState != null)
-            {
-
-            
+            {  
             switch (reports[0])
             {
                 case "Sucesso":
@@ -109,17 +156,15 @@ namespace arq
                 Console.WriteLine(e.ProgressPercentage);
             }
 
-        }
-        // Thread Terminada ----------
+        }  // Retorna mudanças no processo ------------      
         public void bgw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             string[] reports = e.UserState as string[];
             log.AppendText(" Concluido \n");
             ok.Enabled = true;
-        }
+        } // Thread Terminada ----------
         private void btSeleciona_Click(object sender, EventArgs e)
-        {
-            
+        {     
             if (radioArqs.Checked)
             {
                 dr = this.selecionarArquivo.ShowDialog();
