@@ -57,7 +57,6 @@ namespace arq
            var restring = new StringBuilder(texto);
            if (texto.Contains(busca))
            {
-               Console.WriteLine("Encontrado:" + busca + " em " + texto);
                return true;         
            }
            else

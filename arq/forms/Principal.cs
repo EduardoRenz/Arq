@@ -17,7 +17,6 @@ namespace arq
         private FolderBrowserDialog fbd = new FolderBrowserDialog();
         private DialogResult dr;
         public  int percent = 0;
-        private int currentArq = 0;
         public Principal()
         {
             InitializeComponent();
@@ -45,42 +44,39 @@ namespace arq
                 MessageBox.Show("Não é possivel copiar agora, programa está ocupado.");
             }
 
-        } // Ao clickar no botão   
+        } // Ao clickar no botão  e se o diretorio de origem existe
         private void BgWork_copiar(object sender, DoWorkEventArgs e) // Inicia a Thread da copia
         {
-            currentArq = 1;
             string[] report = new string[] { "tipo", "mensagem" };
             string modoEnvio = setModoEnvio(destino.Text);
             string novoDestino = VerificaDestino(destino.Text, Path.GetFileName(selecionarPasta.SelectedPath));
             switch (modoEnvio)
             {
-                case "one":
-                    Console.WriteLine("Copiando uma vez sem variavel");
-                    if (radioArqs.Checked) // Se são arquvos
-                    {
-                        for (int x = 0; x < selecionarArquivo.FileNames.Length; x++)
-                        {
-                            report = new string[] { "", "Copiando: " + selecionarArquivo.SafeFileNames[x] + " para " + VerificaDestino(destino.Text, selecionarArquivo.SafeFileNames[x]) + "\n" };
-                            bgw.ReportProgress(0, report);
-                            CopiaArquivos(selecionarArquivo.FileNames[x], VerificaDestino(destino.Text, selecionarArquivo.SafeFileNames[x]));
-                            currentArq++;
-                        }
-                    }
-                    else // Se são diretórios
-                    {
-                        report = new string[] { "", "Copiando pasta:" + Path.GetFileName(selecionarPasta.SelectedPath) + " para " + VerificaDestino(destino.Text, Path.GetFileName(selecionarPasta.SelectedPath)) + " \n" };
-                    }
+                case "one": // APENAS UMA COPIA DIRETAMENTE
+                    CopiaUnica();
                     break;
                 case "FF":
                     Console.WriteLine("Copiando PARA FF's");
                     if (radioArqs.Checked) // Se são arquvos
                     {
-                        for(decimal x=filMin.Value;x <= filMax.Value; x++)
-                        {
-                            novoDestino = f.subsituidor("FF", novoDestino, x.ToString());
+                       for (decimal x = filMin.Value; x <= filMax.Value; x++)
+                       {
+                            Console.WriteLine("XX vale " + x);
+                            // ------------------- Substitui a variavel so FF para o numero ---------------------------
                             novoDestino = VerificaDestino(destino.Text, Path.GetFileName(selecionarPasta.SelectedPath));
+                            novoDestino = f.subsituidor("FF", novoDestino, x.ToString());
+                            // ----------------------------------------------------------------------------------------
+                            report[0] = ""; report[1] = "Copiando arquivo(s) para: " + novoDestino + "\n";
+                            bgw.ReportProgress((100 * Convert.ToInt32(x)) / Convert.ToInt32(filMax.Value), report);
+                            for (int z = 0; z < selecionarArquivo.FileNames.Length; z++)
+                            {
+                                report[0] = "";
+                                report[1] = " -- > Copiando" + selecionarArquivo.FileNames[z]+"\n";
+                                bgw.ReportProgress((100 * Convert.ToInt32(x)) / Convert.ToInt32(filMax.Value), report);
+                                CopiaArquivos(selecionarArquivo.FileNames[z], VerificaDestino(novoDestino, selecionarArquivo.SafeFileNames[z]));
+                                novoDestino = VerificaDestino(destino.Text, Path.GetFileName(selecionarPasta.SelectedPath));
+                            }  
                         }
-
                     }
                     else
                     {
@@ -128,16 +124,13 @@ namespace arq
                     break;
                 default:
                     break;
-            }
-      
-           
+            }  
         }
 
         private string VerificaDestino(string destino, string nome)
         {
             if (destino[destino.Length -1] == '\\') {
-                destino = destino + nome;
-                
+                destino = destino + nome;     
             }
             return destino;
 
@@ -146,20 +139,25 @@ namespace arq
         {
             if (!f.verificaString("FF", destino) && (!f.verificaString("PP", destino))) // Se não tiver var de Filial
             {
+                Console.WriteLine("verificaString : Não encontrada FF nem PP");
                 return "one";
             }
             else if (!f.verificaString("FF", destino) && (f.verificaString("PP", destino))) // SE não tiver FF mas tiver PP
             {
+                Console.WriteLine("verificaString :PP apenas");
                 return "PP";
             }
             else if (f.verificaString("FF", destino)) {
+                Console.WriteLine("verificaString : Tem FF");
 
-                if(f.verificaString("PP", destino))
+                if (f.verificaString("PP", destino))
                 {
+                    Console.WriteLine("verificaString : PP tambem");
                     return "FFPP";
                 }
                 else
                 {
+                    Console.WriteLine("verificaString :Sò tem FF");
                     return "FF";
                 }
             }
@@ -167,7 +165,7 @@ namespace arq
             {
                 return "none";
             }
-        } 
+        }  // Verifica condição de envio, se é FF PP, unico ou FFPP
         private void bgw_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             string[]   reports = e.UserState as string[];
@@ -192,7 +190,6 @@ namespace arq
             if (e != null)
             {
                 barraProgresso.Value = e.ProgressPercentage;
-                Console.WriteLine(e.ProgressPercentage);
             }
 
         }  // Retorna mudanças no processo ------------      
@@ -200,6 +197,7 @@ namespace arq
         {
             string[] reports = e.UserState as string[];
             log.AppendText(" Concluido \n");
+            barraProgresso.Value = 0;
             ok.Enabled = true;
         } // Thread Terminada ----------
         private void btSeleciona_Click(object sender, EventArgs e)
