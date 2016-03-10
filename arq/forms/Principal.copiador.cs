@@ -11,12 +11,12 @@ namespace arq
         {
             try
             {
-                FileAttributes attr = File.GetAttributes(destino);
-                FileInfo info = new FileInfo(origem);
-                if (attr.HasFlag(FileAttributes.Directory))
+                FileInfo origemInfo = new FileInfo(origem);
+                if (Directory.Exists(destino))
                 {
-                    destino += "\\" + info.Name;
-                }
+                    destino += '\\'+ origemInfo.Name;
+              }
+                Console.WriteLine(origem + " para " + destino);
                     File.Copy(origem, destino, true);
                 Console.WriteLine("Copiado");
                 string[] er = new string[] { "Sucesso", " : Arquivo Copiado \n" };
@@ -30,7 +30,7 @@ namespace arq
                 bgw.ReportProgress(percent, er);
             }
         } //Executa a copia de fato
-        private void CopiaDiretorios(string origem,string destino)
+        private void PreCopiaDiretorios(string origem,string destino)
         {
             DirectoryInfo dirOrigem = new DirectoryInfo(origem);
             DirectoryInfo dirDestino= new DirectoryInfo(destino);
@@ -50,10 +50,10 @@ namespace arq
             foreach (DirectoryInfo diretorio in dirs)
             {
                Console.WriteLine(diretorio.FullName);
-               CopiaDiretorios(diretorio.FullName, destino+"\\"+diretorio.Name);
+               PreCopiaDiretorios(diretorio.FullName, destino+"\\"+diretorio.Name);
             }    
-        }
-    private void CopiaUnica() // Copia unica do arquvo
+        } // Pre Copia de diretorios
+        private void PreCopiaUnica() // Copia unica do arquvo
         {
             string[] report = new string[2];
             Console.WriteLine("Copiando uma vez sem variavel");
@@ -61,15 +61,15 @@ namespace arq
             {
                 for (int x = 0; x < selecionarArquivo.FileNames.Length; x++)
                 {
-                report[0] = ""; report[1] = "Copiando: "+ selecionarArquivo.SafeFileNames[x]+"\n";
-                bgw.ReportProgress((100 * x) / selecionarArquivo.FileNames.Length, report);
+                    report[0] = ""; report[1] = "Copiando: "+ selecionarArquivo.SafeFileNames[x]+"\n";
+                    bgw.ReportProgress((100 * x) / selecionarArquivo.FileNames.Length, report);
                     CopiaArquivos(selecionarArquivo.FileNames[x], VerificaDestino(destino.Text, selecionarArquivo.SafeFileNames[x]));
                 }
             }
             else // Se são diretórios
             {
-                CopiaDiretorios(selecionarPasta.SelectedPath,destino.Text);
-               // report = new string[] { "", "Copiando pasta:" + Path.GetFileName(selecionarPasta.SelectedPath) + " para " + VerificaDestino(destino.Text, Path.GetFileName(selecionarPasta.SelectedPath)) + " \n" };
+                PreCopiaDiretorios(selecionarPasta.SelectedPath,destino.Text);
+                report = new string[] { "", "Copiando pasta:" + Path.GetFileName(selecionarPasta.SelectedPath) + " para " + VerificaDestino(destino.Text, Path.GetFileName(selecionarPasta.SelectedPath)) + " \n" };
             }
         }
      }

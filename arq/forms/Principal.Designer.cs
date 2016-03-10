@@ -85,7 +85,7 @@ namespace arq
             opCredenciais.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             opCredenciais.Name = "opCredenciais";
             opCredenciais.Padding = new System.Windows.Forms.Padding(3, 0, 3, 3);
-            opCredenciais.Size = new System.Drawing.Size(418, 54);
+            opCredenciais.Size = new System.Drawing.Size(414, 54);
             opCredenciais.TabIndex = 0;
             opCredenciais.TabStop = false;
             opCredenciais.Text = "Credenciais";
@@ -143,7 +143,7 @@ namespace arq
             Galcance.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             Galcance.Name = "Galcance";
             Galcance.Padding = new System.Windows.Forms.Padding(3, 0, 3, 3);
-            Galcance.Size = new System.Drawing.Size(418, 54);
+            Galcance.Size = new System.Drawing.Size(414, 54);
             Galcance.TabIndex = 7;
             Galcance.TabStop = false;
             Galcance.Text = "Alcance";
@@ -359,13 +359,14 @@ namespace arq
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(424, 308);
+            this.tabPage2.Size = new System.Drawing.Size(420, 304);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Configurações";
             // 
             // selecionarArquivo
             // 
             this.selecionarArquivo.CheckFileExists = false;
+            this.selecionarArquivo.DereferenceLinks = false;
             this.selecionarArquivo.FileName = "Folder Selection.";
             this.selecionarArquivo.Multiselect = true;
             this.selecionarArquivo.ValidateNames = false;

@@ -53,7 +53,7 @@ namespace arq
             switch (modoEnvio)
             {
                 case "one": // APENAS UMA COPIA DIRETAMENTE
-                    CopiaUnica();
+                    PreCopiaUnica();
                     break;
                 case "FF":
                     Console.WriteLine("Copiando PARA FF's");
