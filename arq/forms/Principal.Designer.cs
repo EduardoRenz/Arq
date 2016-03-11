@@ -382,7 +382,7 @@ namespace arq
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "Principal";
-            this.Text = "Envio de Arquivos nas Filiais";
+            this.Text = "Envio de Arquivos nas Filiais V: 1.2.1.5";
             opCredenciais.ResumeLayout(false);
             opCredenciais.PerformLayout();
             Galcance.ResumeLayout(false);

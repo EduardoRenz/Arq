@@ -18,6 +18,7 @@ namespace arq
                 }
                 percent = (100 * arqAtual) / numArqs;
                 bgw.ReportProgress(percent);
+                Conecta c = new Conecta(destino, BoxUser.Text, BoxSenha.Text);
                 File.Copy(origem, destino, true);
                 string[] er = new string[] { "Sucesso", " : Arquivo Copiado \n" };
 
