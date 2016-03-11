@@ -61,14 +61,14 @@ namespace arq
                 {
                     Reportar("", "Copiando: " + selecionarArquivo.SafeFileNames[x] + "\n", barraProgresso.Value);
                     CopiaArquivos(selecionarArquivo.FileNames[x], VerificaDestino(destino, selecionarArquivo.SafeFileNames[x]));
+                   
                 }
             }
             else // Se são diretórios
             {
                 numArqs = f.numArquivos(selecionarPasta.SelectedPath);
-
-                PreCopiaDiretorios(selecionarPasta.SelectedPath, destino);
                 Reportar("", "Copiando pasta:" + Path.GetFileName(selecionarPasta.SelectedPath) + " para " + VerificaDestino(destino, Path.GetFileName(selecionarPasta.SelectedPath)) + " \n", barraProgresso.Value);
+                PreCopiaDiretorios(selecionarPasta.SelectedPath, destino);     
             }
         }
         private void PreMultiCopia() // Copia de vários
@@ -91,17 +91,19 @@ namespace arq
                 ffMinimo = 1;
                 ffMaximo = 1;
             }
-            for (decimal ff = ffMinimo; ff <= ffMaximo; ff++)
+            decimal ff = ffMinimo;
+            do
             {
                 arqAtual = 1;
                 novoDestino = f.subsituidor("FF", destino.Text, ff.ToString());
+                Reportar("", " FF : " + ff + " ====================== \n", 100);
                 if (f.verificaString("PP", novoDestino))
                 {
                     for (int pp = 2; pp <= 5; pp++)
                     {
                         arqAtual = 1;
                         novoDestino = f.subsituidor("PP", novoDestino, pp.ToString());
-                        Reportar("", " --> " + novoDestino + "\n", barraProgresso.Value);
+                        Reportar("", " -- PP : " + pp + " ---------------------\n", barraProgresso.Value);
                         PreCopiaUnica(novoDestino);
                         novoDestino = destino.Text;
                         novoDestino = f.subsituidor("FF", destino.Text, ff.ToString());
@@ -110,10 +112,11 @@ namespace arq
                 else
                 {
                     PreCopiaUnica(novoDestino);
-                    Reportar("", "" + novoDestino + "\n", 100);
                     novoDestino = destino.Text;
                 }
-            }
+                ff++;
+            } while (ff <= ffMaximo);
+
             novoDestino = destino.Text;
         }
         private string VerificaDestino(string destino, string nome)

@@ -89,15 +89,14 @@ namespace arq
                     break;
             }
             }
-            Console.WriteLine(percent + "<< percent");
             barraProgresso.Value = e.ProgressPercentage;
 
 
         }  // Retorna mudanças no processo ------------      
         public void bgw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            string[] reports = e.UserState as string[];
-            log.AppendText(" Concluido \n");
+            f.alert(log, " Concluido \n");
+          //  log.AppendText(" Concluido \n");
             barraProgresso.Value = numArqs = percent = 0;
             arqAtual = 1;
             ok.Enabled = true;
