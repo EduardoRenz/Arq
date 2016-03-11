@@ -71,11 +71,11 @@ namespace arq
            if (texto.Contains(busca))
            {
                restring.Replace(busca, substitui);
-               Console.WriteLine(texto + " Aletrado para:" + restring.ToString());
+               //Console.WriteLine(texto + " Aletrado para:" + restring.ToString());
            }
            else
            {
-               Console.WriteLine("Não houve alterações em:"+texto);
+              // Console.WriteLine("Não houve alterações em:"+texto);
            }
            return restring.ToString();
        }
