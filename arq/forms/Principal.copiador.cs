@@ -16,17 +16,18 @@ namespace arq
                 {
                     destino += '\\' + origemInfo.Name;
                 }
-                Console.WriteLine(origem + " para " + destino);
+                percent = (100 * arqAtual) / numArqs;
+                bgw.ReportProgress(percent);
                 File.Copy(origem, destino, true);
                 string[] er = new string[] { "Sucesso", " : Arquivo Copiado \n" };
-                // percent = (100 * currentArq) / selecionarArquivo.FileNames.Length;
-                bgw.ReportProgress(barraProgresso.Value, er);
+
+                bgw.ReportProgress(percent, er);
+                arqAtual++;
             }
             catch (Exception e)
             {
-                Console.WriteLine("Erro: {0}", e.Message);
                 string[] er = new string[] { "Erro", " : " + e.Message.ToString() + "\n" };
-                bgw.ReportProgress(percent, er);
+                bgw.ReportProgress(100, er);
             }
         } //Executa a copia de fato
         private void PreCopiaDiretorios(string origem, string destino)
@@ -48,7 +49,6 @@ namespace arq
             }
             foreach (DirectoryInfo diretorio in dirs)
             {
-                Console.WriteLine(diretorio.FullName);
                 PreCopiaDiretorios(diretorio.FullName, destino + "\\" + diretorio.Name);
             }
         } // Pre Copia de diretorios
@@ -56,14 +56,17 @@ namespace arq
         {
             if (radioArqs.Checked) // Se são arquvos
             {
+                numArqs = selecionarArquivo.FileNames.Length;
                 for (int x = 0; x < selecionarArquivo.FileNames.Length; x++)
                 {
-                    Reportar("", "Copiando: " + selecionarArquivo.SafeFileNames[x] + "\n", (100 * x) / selecionarArquivo.FileNames.Length);
+                    Reportar("", "Copiando: " + selecionarArquivo.SafeFileNames[x] + "\n", barraProgresso.Value);
                     CopiaArquivos(selecionarArquivo.FileNames[x], VerificaDestino(destino, selecionarArquivo.SafeFileNames[x]));
                 }
             }
             else // Se são diretórios
             {
+                numArqs = f.numArquivos(selecionarPasta.SelectedPath);
+
                 PreCopiaDiretorios(selecionarPasta.SelectedPath, destino);
                 Reportar("", "Copiando pasta:" + Path.GetFileName(selecionarPasta.SelectedPath) + " para " + VerificaDestino(destino, Path.GetFileName(selecionarPasta.SelectedPath)) + " \n", barraProgresso.Value);
             }
@@ -90,13 +93,15 @@ namespace arq
             }
             for (decimal ff = ffMinimo; ff <= ffMaximo; ff++)
             {
+                arqAtual = 1;
                 novoDestino = f.subsituidor("FF", destino.Text, ff.ToString());
                 if (f.verificaString("PP", novoDestino))
                 {
                     for (int pp = 2; pp <= 5; pp++)
                     {
+                        arqAtual = 1;
                         novoDestino = f.subsituidor("PP", novoDestino, pp.ToString());
-                        Reportar("", " --> " + novoDestino + "\n", 100);
+                        Reportar("", " --> " + novoDestino + "\n", barraProgresso.Value);
                         PreCopiaUnica(novoDestino);
                         novoDestino = destino.Text;
                         novoDestino = f.subsituidor("FF", destino.Text, ff.ToString());
@@ -111,7 +116,26 @@ namespace arq
             }
             novoDestino = destino.Text;
         }
+        private string VerificaDestino(string destino, string nome)
+        {
+            if (destino[destino.Length - 1] == '\\')
+            {
+                destino = destino + nome;
+            }
+            return destino;
 
+        } // Ajusta arquivo no destino, baseado na variavel de destino 
+        private string setModoEnvio(string destino)
+        {
+            if (!f.verificaString("FF", destino) && (!f.verificaString("PP", destino))) // Se não tiver var de Filial
+            {
+                return "one";
+            }
+            else
+            {
+                return "FFPP";
+            }
+        }
     }
 }
 

@@ -5,8 +5,7 @@ using System.Windows.Forms;
 
 //COISAS A FAZER
 // Botão OK/Cancelar
-// Localizador de arquivos como origem
-// Corrigir copia de diretorio inteiro
+// Ajustar porcentagem do progresso
 
 namespace arq
 {
@@ -16,7 +15,9 @@ namespace arq
         Funcoes f = new Funcoes();
         private FolderBrowserDialog fbd = new FolderBrowserDialog();
         private DialogResult dr;
-        public int percent = 0;
+        private int percent = 0;
+        private int numArqs = 0;
+        private int arqAtual = 1;
         public Principal()
         {
             InitializeComponent();
@@ -49,7 +50,6 @@ namespace arq
         {
             string[] report = new string[] { "tipo", "mensagem" };
             string modoEnvio = setModoEnvio(destino.Text);
-            string novoDestino = VerificaDestino(destino.Text, Path.GetFileName(selecionarPasta.SelectedPath));
             switch (modoEnvio)
             {
                 case "one": // APENAS UMA COPIA DIRETAMENTE
@@ -61,33 +61,13 @@ namespace arq
                 default:
                     break;
             }
-        }
-        private string VerificaDestino(string destino, string nome)
-        {
-            if (destino[destino.Length - 1] == '\\') {
-                destino = destino + nome;
-            }
-            return destino;
-
-        } // Ajusta arquivo no destino, baseado na variavel de destino      
-        private string setModoEnvio(string destino)
-        {
-            if (!f.verificaString("FF", destino) && (!f.verificaString("PP", destino))) // Se não tiver var de Filial
-            {
-                return "one";
-            }
-            else
-            {
-                return "FFPP";
-            }
-        }
+        }     
         private void Reportar(string tipo, string mensagem, int porcentagem)
         {
             string[] report = new string[2];
             report[0] = tipo; report[1] = mensagem;
             bgw.ReportProgress(porcentagem, report);
         } // Reportador para o log
-      // Verifica condição de envio, se é FF PP, unico ou FFPP
         private void bgw_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             string[]   reports = e.UserState as string[];
@@ -109,21 +89,21 @@ namespace arq
                     break;
             }
             }
-            if (e != null)
-            {
-                barraProgresso.Value = e.ProgressPercentage;
-            }
+            Console.WriteLine(percent + "<< percent");
+            barraProgresso.Value = e.ProgressPercentage;
+
 
         }  // Retorna mudanças no processo ------------      
         public void bgw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             string[] reports = e.UserState as string[];
             log.AppendText(" Concluido \n");
-            barraProgresso.Value = 0;
+            barraProgresso.Value = numArqs = percent = 0;
+            arqAtual = 1;
             ok.Enabled = true;
         } // Thread Terminada ----------
         private void btSeleciona_Click(object sender, EventArgs e)
-        {     
+        {
             if (radioArqs.Checked)
             {
                 dr = this.selecionarArquivo.ShowDialog();
@@ -144,11 +124,10 @@ namespace arq
                 dr = this.selecionarPasta.ShowDialog();
                 if (dr == DialogResult.OK)
                 {
-                    Console.WriteLine(selecionarPasta.SelectedPath);
                     origem.Text = selecionarPasta.SelectedPath;
                 }     
             }
-        }
+        } // Botão para abrir explorador de arquivos/pastas
 
     }
 }

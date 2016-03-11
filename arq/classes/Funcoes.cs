@@ -80,56 +80,13 @@ namespace arq
            return restring.ToString();
        }
         //========================================================================== AÇÔES =======================================================================
-       public string[] copiar(string origem,string destino)
-       {
-           if (this.verificaDiretorio(origem))
-           {
-               string[] last = origem.Split(Path.DirectorySeparatorChar);
-               Console.WriteLine("A ultima é: " + last[last.Length -1]);
-               try
-               {
-                    //====================== copia se for Diretorios
-                     Console.WriteLine("Iniciado copia de diretorio");
-                     //Now Create all of the directories
-                    foreach (string dirPath in Directory.GetDirectories(origem, "*",
-                         SearchOption.AllDirectories))
-                        Directory.CreateDirectory(dirPath.Replace(origem, destino));
-                     //Copy all the files & Replaces any files with the same name
-                     foreach (string newPath in Directory.GetFiles(origem, "*.*",
-                         SearchOption.AllDirectories))
-                        File.Copy(newPath, newPath.Replace(origem, destino), true);
-                     Console.WriteLine("Copiado");
-                     string[] er = new string[] { "Sucesso", "Arquivo Copiado" };
-                     return er;
+        public int numArquivos(string diretorio)
+        {
+            //DirectoryInfo directory = new DirectoryInfo(diretorio);
+            string[] files = Directory.GetFiles(diretorio,"*",SearchOption.AllDirectories);
 
-               }
-               catch (Exception e)
-               {
-                   Console.WriteLine("Erro: {0}", e.Message);
-                   string[] er = new string[] { "Erro", e.Message.ToString() };
-                   return er;
-
-               }           
-           }
-
-// ============================================================================= ARQUIVO UNIVO ====================================================================
-           else{
-               Console.WriteLine("Iniciado copia de arquivo");
-               try
-               {
-                   File.Copy(origem, destino, true);
-                   Console.WriteLine("Copiado");
-                   string[] er = new string[] { "Sucesso", "Arquivo Copiado" };
-                   return er;
-               }
-               catch (Exception e)
-               {
-                   Console.WriteLine("Erro: {0}", e.Message);
-                   string[] er = new string[]{"Erro",e.Message.ToString()};
-                   return er;                      
-               }
-           }
-       }
+            return files.Length;
+        }
     }
     }
 
