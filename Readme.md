@@ -1,4 +1,4 @@
-#Arq
+# Arq
 
 
 Projeto consistia em ler um arquivo de texto gerado por um sistema legado, contendo várias informações que eram necessárias 
